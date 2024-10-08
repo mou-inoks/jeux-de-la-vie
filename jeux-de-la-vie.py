@@ -51,7 +51,7 @@ if(__name__ == "__main__"):
 
     # Boucle principale
     running = True
-    
+
     while running:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -59,6 +59,6 @@ if(__name__ == "__main__"):
 
         mettre_a_jour_grille(grille)
         afficher_grille(grille, screen, taille_cellule)
-        pygame.time.wait(1000)  # Attendez une seconde avant de mettre à jour à nouveau
+        pygame.time.wait(1000)
 
     pygame.quit()
