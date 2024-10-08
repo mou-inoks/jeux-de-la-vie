@@ -27,9 +27,6 @@ class Cellule:
     def appliquer_etat_futur(self):
         self.etat = self.etat_futur
     
-    def basculer_etat(self):
-        self.etat = Etat.VIVANT if self.etat == Etat.MORT else Etat.MORT
-
 class Tableau:
     def __init__(self, largeur, hauteur):
         self.largeur = largeur
