@@ -1,4 +1,6 @@
+# entities.py
 from enum import Enum
+import pygame
 
 class Etat(Enum):
     VIVANT = 1
@@ -26,8 +28,7 @@ class Cellule:
         self.etat = self.etat_futur
     
     def basculer_etat(self):
-        self.etat = 1 if self.etat == 0 else 0
-
+        self.etat = Etat.VIVANT if self.etat == Etat.MORT else Etat.MORT
 
 class Tableau:
     def __init__(self, largeur, hauteur):
@@ -39,28 +40,40 @@ class Tableau:
         for x, y in cellules_vivantes:
             self.grille[y][x].etat = Etat.VIVANT 
 
+    def afficher_grille(self, screen, taille_cellule):
+        screen.fill((255, 255, 255))
+        for y in range(self.hauteur):
+            for x in range(self.largeur):
+                cellule = self.grille[y][x]
+                couleur = (255, 255, 255) if cellule.etat == Etat.MORT else (0, 0, 0)
+                pygame.draw.rect(screen, couleur, (x * taille_cellule, y * taille_cellule, taille_cellule, taille_cellule))
+        pygame.display.flip()
+
     def compter_voisins_vivants(self, x, y):
         voisins_vivants = 0
         for i in range(-1, 2):
             for j in range(-1, 2):
-                if (i == 0 and j == 0) or not (0 <= x + i < self.largeur) or not (0 <= y + j < self.hauteur): # On exclut la cellule elle-même et les cellules hors de la grille
+                if (i == 0 and j == 0) or not (0 <= x + i < self.largeur) or not (0 <= y + j < self.hauteur):
                     continue
                 if self.grille[y + j][x + i].etat == Etat.VIVANT:
-                    voisins_vivants += 1  # Incrémente seulement si elle est vivante
+                    voisins_vivants += 1
         return voisins_vivants
 
     def mettre_a_jour_grille(self):
-        nouvelle_grille = [[0 for _ in range(self.largeur)] for _ in range(self.hauteur)]
         for y in range(self.hauteur):
             for x in range(self.largeur):
                 voisins_vivants = self.compter_voisins_vivants(x, y)
-                if self.grille[y][x] == 1:  # Cellule vivante
-                    if voisins_vivants in [2, 3]:
-                        nouvelle_grille[y][x] = 1  # Reste vivante
+                if self.grille[y][x].etat == Etat.VIVANT:  # Cellule vivante
+                    if voisins_vivants not in [2, 3]:
+                        self.grille[y][x].definir_etat_futur(Etat.MORT)  # Meurt
                 else:  # Cellule morte
                     if voisins_vivants == 3:
-                        nouvelle_grille[y][x] = 1  # Devient vivante
-        self.grille = nouvelle_grille
+                        self.grille[y][x].definir_etat_futur(Etat.VIVANT)  # Devient vivante
+
+        # Appliquer les états futurs
+        for y in range(self.hauteur):
+            for x in range(self.largeur):
+                self.grille[y][x].appliquer_etat_futur()
 
     def reinitialiser_grille(self):
-        self.grille = [[0 for _ in range(self.largeur)] for _ in range(self.hauteur)]
+        self.grille = [[Cellule(x, y, Etat.MORT) for x in range(self.largeur)] for y in range(self.hauteur)]
