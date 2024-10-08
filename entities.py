@@ -39,17 +39,14 @@ class Tableau:
         for x, y in cellules_vivantes:
             self.grille[y][x].etat = Etat.VIVANT 
 
-    def afficher(self):
-        for ligne in self.grille:
-            print(" ".join(str(cellule.etat.value) for cellule in ligne))
-
     def compter_voisins_vivants(self, x, y):
         voisins_vivants = 0
         for i in range(-1, 2):
             for j in range(-1, 2):
                 if (i == 0 and j == 0) or not (0 <= x + i < self.largeur) or not (0 <= y + j < self.hauteur): # On exclut la cellule elle-même et les cellules hors de la grille
                     continue
-                voisins_vivants += self.grille[y + j][x + i]
+                if self.grille[y + j][x + i].etat == Etat.VIVANT:
+                    voisins_vivants += 1  # Incrémente seulement si elle est vivante
         return voisins_vivants
 
     def mettre_a_jour_grille(self):

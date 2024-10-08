@@ -42,9 +42,16 @@ def mettre_a_jour_grille(tableau):
 
 
 if(__name__ == "__main__"):
+
     grille = initialiser_grille(largeut_grille, hauteur_grille)
 
-    for _ in range(10):
+    pygame.init()
+
+    screen = pygame.display.set_mode((largeut_grille * taille_cellule, hauteur_grille * taille_cellule))
+
+    for _ in range(1000):
         mettre_a_jour_grille(grille)
-        afficher_grille(grille, taille_cellule)
+        afficher_grille(grille, screen, taille_cellule)
         pygame.time.wait(1000)
+
+    pygame.quit()
